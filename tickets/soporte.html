@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reportar Falla - Soporte Técnico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .form-header h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+        .form-header p {
+            margin: 0.3rem 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        .form-body {
+            padding: 1.5rem;
+        }
+        .form-floating > label {
+            padding-left: 1rem;
+        }
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            font-size: 16px; /* Previene zoom en iOS */
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .btn-submit {
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+        .btn-submit:disabled {
+            background: #9ca3af;
+        }
+        .spinner-border {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.5rem;
+        }
+        /* Toast personalizado */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1060;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .qr-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center p-3">
+
+    <div class="container" style="max-width: 480px;">
+        <div class="form-container">
+            <!-- Header -->
+            <div class="form-header">
+                <svg width="40" height="40" fill="currentColor" viewBox="0 0 16 16" class="mb-2">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25C6.54 4.173 7.312 3.5 8 3.5c1.178 0 2.14.902 2.14 2.013 0 .706-.353 1.29-.875 1.654a2.5 2.5 0 0 0-1.208 1.837l-.007.117c0 .11.09.2.202.2h1.006a.2.2 0 0 0 .2-.2 1.6 1.6 0 0 1 .762-1.345c.607-.41.931-1.064.931-1.863 0-1.754-1.518-3.174-3.368-3.174-1.886 0-3.398 1.453-3.398 3.248 0 .66.22 1.267.6 1.742.1.127.157.282.157.447 0 .17-.07.322-.183.434a.62.62 0 0 1-.434.183h-.825a.237.237 0 0 1-.241-.247zM8 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                </svg>
+                <h2>🎫 Reportar Falla</h2>
+                <p>Soporte Técnico 24/7</p>
+                <div class="qr-badge">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2 2h5v5H2V2zm6 0h5v5H8V2zm-6 6h5v5H2V8zm6 0h5v5H8V8z"/>
+                    </svg>
+                    Escanea el código QR para reportar
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <div class="form-body">
+                <form id="ticketForm" novalidate>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="cliente_nombre"
+                               placeholder="Tu nombre" required minlength="2">
+                        <label for="cliente_nombre">👤 Nombre completo</label>
+                        <div class="invalid-feedback">Ingresa tu nombre</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="cliente_contacto"
+                               placeholder="Email o Teléfono" required>
+                        <label for="cliente_contacto">📧 Email o Teléfono</label>
+                        <div class="invalid-feedback">Ingresa un contacto válido</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="modulo_falla" required>
+                            <option value="" selected disabled>Selecciona...</option>
+                            <option value="Facturación">📄 Facturación</option>
+                            <option value="Usuarios">👥 Usuarios y Accesos</option>
+                            <option value="Inventario">📦 Inventario</option>
+                            <option value="Reportes">📊 Reportes</option>
+                            <option value="Pagos">💳 Pagos</option>
+                            <option value="Otro">🔧 Otro</option>
+                        </select>
+                        <label for="modulo_falla">📂 Módulo con falla</label>
+                        <div class="invalid-feedback">Selecciona el módulo</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="prioridad">
+                            <option value="Baja">🟢 Baja</option>
+                            <option value="Media" selected>🟡 Media</option>
+                            <option value="Alta">🔴 Alta</option>
+                        </select>
+                        <label for="prioridad">⚡ Prioridad</label>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <textarea class="form-control" id="descripcion"
+                                  placeholder="Describe la falla"
+                                  style="height: 120px;" required minlength="10"></textarea>
+                        <label for="descripcion">📝 Describe la falla detalladamente</label>
+                        <div class="invalid-feedback">Mínimo 10 caracteres</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-submit" id="btnSubmit">
+                        <span id="btnText">📨 Enviar Ticket</span>
+                        <span id="btnSpinner" class="spinner-border d-none" role="status"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificación -->
+    <div class="toast-container">
+        <div id="toast" class="toast align-items-center text-white border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body fw-bold" id="toastBody">
+                    Mensaje
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'https://backend-lnpk.onrender.com/api/tickets'; // Cambia por tu URL
+
+        const form = document.getElementById('ticketForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const toast = new bootstrap.Toast(document.getElementById('toast'));
+        const toastBody = document.getElementById('toastBody');
+        const toastEl = document.getElementById('toast');
+
+        function showToast(message, type = 'success') {
+            toastBody.textContent = message;
+            toastEl.className = `toast align-items-center text-white border-0 bg-${type === 'success' ? 'success' : 'danger'}`;
+            toast.show();
+        }
+
+        function setLoading(loading) {
+            btnSubmit.disabled = loading;
+            btnText.textContent = loading ? 'Enviando...' : '📨 Enviar Ticket';
+            btnSpinner.classList.toggle('d-none', !loading);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            setLoading(true);
+
+            const payload = {
+                cliente_nombre: document.getElementById('cliente_nombre').value.trim(),
+                cliente_contacto: document.getElementById('cliente_contacto').value.trim(),
+                modulo_falla: document.getElementById('modulo_falla').value,
+                prioridad: document.getElementById('prioridad').value,
+                descripcion: document.getElementById('descripcion').value.trim()
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Error al crear ticket');
+                }
+
+                const data = await response.json();
+                showToast(`✅ Ticket #${data.id} creado exitosamente. Te contactaremos pronto.`);
+                form.reset();
+                form.classList.remove('was-validated');
+
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'danger');
+                console.error('Error:', error);
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>

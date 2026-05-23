@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cotizaciones - IDEAS SOFT</title>
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --accent-color: #198754;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            padding: 2rem 1rem;
+        }
+
+        /* Panel del Formulario */
+        .form-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .form-panel h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .btn-generar {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-generar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+        }
+
+        /* Panel de Vista Previa A4 */
+        .preview-panel {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .hoja-a4 {
+            background: #ffffff;
+            width: 100%;
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 25mm 20mm;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .membrete {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .membrete-logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: -1px;
+        }
+
+        .membrete-sub {
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .datos-cotizacion {
+            margin-bottom: 2rem;
+        }
+
+        .datos-cotizacion h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px dashed #dee2e6;
+            font-size: 0.9rem;
+        }
+
+        .info-row strong {
+            color: #495057;
+        }
+
+        .tabla-cotizacion {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            border-collapse: collapse;
+        }
+
+        .tabla-cotizacion thead th {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tabla-cotizacion tbody td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+
+        .tabla-cotizacion tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .totales-section {
+            margin-top: 1.5rem;
+            border-top: 2px solid #dee2e6;
+            padding-top: 1rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .total-row.grand-total {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            border-top: 2px solid var(--primary-color);
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+            color: white;
+        }
+
+        .badge-modulo {
+            background: #e7f1ff;
+            color: var(--primary-color);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0.15rem;
+        }
+
+        .estado-vacio {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--secondary-color);
+        }
+
+        .estado-vacio i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .alerta-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+
+        .modulo-checkbox {
+            padding: 0.6rem 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .modulo-checkbox:hover {
+            border-color: var(--primary-color);
+            background: #e7f1ff;
+        }
+
+        .modulo-checkbox input:checked + label {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .modulo-checkbox input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .precio-tag {
+            float: right;
+            background: #198754;
+            color: white;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        @media print {
+            body { background: white; }
+            .form-panel, .btn-pdf { display: none !important; }
+            .hoja-a4 { box-shadow: none; margin: 0; width: 100%; }
+        }
+
+        @media (max-width: 991px) {
+            .hoja-a4 { min-height: auto; padding: 15mm; }
+            .preview-panel { position: relative; top: 0; margin-top: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="container-fluid">
+        <div class="row g-4">
+
+            <!-- ============================================ -->
+            <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+            <!-- ============================================ -->
+            <div class="col-lg-5">
+                <div class="form-panel">
+                    <h3><i class="bi bi-calculator-fill me-2"></i>Nueva Cotización</h3>
+
+                    <form id="formCotizacion">
+                        <!-- Datos del Cliente -->
+                        <div class="mb-4">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                <i class="bi bi-person-fill me-1"></i> Datos del Cliente
+                            </h6>
+
+                            <div class="mb-3">
+                                <label for="clienteNombre" class="form-label">Nombre Completo / Razón Social</label>
+                                <input type="text" class="form-control" id="clienteNombre" required
+                                       placeholder="Ej: Corporación Alpha S.A.C.">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="clienteDocumento" class="form-label">RUC / DNI</label>
+                                    <input type="text" class="form-control" id="clienteDocumento" required
+                                           placeholder="Ej: 20548796321">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="clienteCorreo" class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control" id="clienteCorreo" required
+                                           placeholder="Ej: contacto@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuración del Proyecto -->
+                        <div class="mb-4">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                <i class="bi bi-laptop-fill me-1"></i> Configuración del Proyecto
+                            </h6>
+
+                            <div class="mb-3">
+                                <label for="tipoProyecto" class="form-label">Tipo de Proyecto</label>
+                                <select class="form-select" id="tipoProyecto" required>
+                                    <option value="" disabled selected>Seleccione un tipo de proyecto...</option>
+                                    <option value="Web">🌐 Desarrollo Web - Base $300</option>
+                                    <option value="Móvil">📱 Aplicación Móvil - Base $500</option>
+                                    <option value="Sistema">🖥️ Sistema Académico - Base $700</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Módulos Adicionales</label>
+                                <div id="contenedorModulos" class="border rounded-3 p-3 bg-light">
+                                    <p class="text-muted text-center mb-0" style="font-size: 0.9rem;">
+                                        <i class="bi bi-info-circle me-1"></i> Seleccione un tipo de proyecto para ver los módulos disponibles
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descuento -->
+                        <div class="mb-4">
+                            <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                <i class="bi bi-tag-fill me-1"></i> Promociones
+                            </h6>
+                            <div class="mb-3">
+                                <label for="descuento" class="form-label">Descuento (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="descuento" min="0" max="100" value="0">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="form-text">Ingrese un valor entre 0 y 100</div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Generar -->
+                        <button type="submit" class="btn btn-primary btn-generar">
+                            <i class="bi bi-check-circle-fill me-2"></i>Generar y Guardar Cotización
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- COLUMNA DERECHA: VISTA PREVIA A4 -->
+            <!-- ============================================ -->
+            <div class="col-lg-7">
+                <div class="preview-panel">
+                    <!-- Botón PDF -->
+                    <div class="text-center mb-3">
+                        <button class="btn btn-pdf" id="btnDescargarPDF" onclick="descargarPDF()" disabled>
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                            Descargar Propuesta en PDF
+                        </button>
+                    </div>
+
+                    <!-- Hoja A4 -->
+                    <div class="hoja-a4" id="hojaA4">
+
+                        <!-- Membrete -->
+                        <div class="membrete">
+                            <div class="membrete-logo">IDEAS SOFT</div>
+                            <div class="membrete-sub">Soluciones Tecnológicas</div>
+                            <div style="font-size: 0.8rem; color: #6c757d; margin-top: 0.5rem;">
+                                RUC: 20548796321 | contacto@ideas-soft.pe | www.ideas-soft.pe
+                            </div>
+                        </div>
+
+                        <!-- Estado Vacío (inicial) -->
+                        <div id="estadoVacio" class="estado-vacio">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <h4 class="mt-3">Vista Previa de Cotización</h4>
+                            <p>Complete el formulario y presione "Generar y Guardar Cotización"<br>para visualizar la propuesta formal aquí.</p>
+                        </div>
+
+                        <!-- Contenido de la Cotización (oculto inicialmente) -->
+                        <div id="contenidoCotizacion" style="display: none;">
+
+                            <!-- Datos del Cliente -->
+                            <div class="datos-cotizacion">
+                                <h5>Datos del Cliente</h5>
+                                <div class="info-row">
+                                    <strong>Cliente:</strong>
+                                    <span id="previewNombre">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <strong>Documento:</strong>
+                                    <span id="previewDocumento">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <strong>Correo:</strong>
+                                    <span id="previewCorreo">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <strong>Fecha de Emisión:</strong>
+                                    <span id="previewFecha">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <strong>Tipo de Proyecto:</strong>
+                                    <span id="previewTipo">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de Conceptos -->
+                            <div class="datos-cotizacion">
+                                <h5>Detalle de Servicios</h5>
+                                <table class="tabla-cotizacion">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50%;">Concepto</th>
+                                            <th class="text-center">Cant.</th>
+                                            <th class="text-end">P. Unit.</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaConceptos">
+                                        <!-- Se llena dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Totales -->
+                            <div class="totales-section">
+                                <div class="total-row">
+                                    <span>Subtotal:</span>
+                                    <strong id="previewSubtotal">$0.00</strong>
+                                </div>
+                                <div class="total-row text-success" id="filaDescuento" style="display: none;">
+                                    <span>Descuento aplicado (<span id="previewDescPorcentaje">0</span>%):</span>
+                                    <strong id="previewDescuento">-$0.00</strong>
+                                </div>
+                                <div class="total-row">
+                                    <span>IGV (18%):</span>
+                                    <strong id="previewIGV">$0.00</strong>
+                                </div>
+                                <div class="total-row grand-total">
+                                    <span>TOTAL A PAGAR:</span>
+                                    <span id="previewTotal">$0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Notas -->
+                            <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6; font-size: 0.8rem; color: #6c757d;">
+                                <p><strong>Notas:</strong></p>
+                                <ul style="padding-left: 1.2rem;">
+                                    <li>Valores expresados en Dólares Americanos (USD).</li>
+                                    <li>Validez de la cotización: 15 días calendario.</li>
+                                    <li>Forma de pago: 50% adelanto, 50% contra entrega.</li>
+                                    <li>Esta cotización no incluye costos de hosting ni dominio.</li>
+                                </ul>
+                                <div style="text-align: center; margin-top: 2rem;">
+                                    <p style="font-style: italic;">"Transformando ideas en soluciones tecnológicas"</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast de Notificaciones -->
+<div id="toastContainer"></div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- html2pdf.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+// ============================================================
+// CONFIGURACIÓN Y VARIABLES GLOBALES
+// ============================================================
+const API_URL = 'https://backend-lnpk.onrender.com/api/cotizaciones';
+
+const MODULOS_DISPONIBLES = {
+    'Web': [
+        { nombre: 'Autenticación', precio: 50 },
+        { nombre: 'Pasarela de Pagos', precio: 100 },
+        { nombre: 'Panel Administrador', precio: 150 },
+        { nombre: 'Reportes PDF', precio: 80 }
+    ],
+    'Móvil': [
+        { nombre: 'Autenticación', precio: 50 },
+        { nombre: 'Pasarela de Pagos', precio: 100 },
+        { nombre: 'Panel Administrador', precio: 150 },
+        { nombre: 'Reportes PDF', precio: 80 }
+    ],
+    'Sistema': [
+        { nombre: 'Autenticación', precio: 50 },
+        { nombre: 'Pasarela de Pagos', precio: 100 },
+        { nombre: 'Panel Administrador', precio: 150 },
+        { nombre: 'Reportes PDF', precio: 80 }
+    ]
+};
+
+// ============================================================
+// FUNCIONES DE UTILIDAD
+// ============================================================
+
+function formatearMoneda(valor) {
+    return '$' + parseFloat(valor).toFixed(2);
+}
+
+function formatearFecha() {
+    const ahora = new Date();
+    const opciones = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return ahora.toLocaleDateString('es-PE', opciones);
+}
+
+function mostrarToast(mensaje, tipo = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toastId = 'toast-' + Date.now();
+
+    const iconos = {
+        success: 'bi-check-circle-fill',
+        error: 'bi-x-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info: 'bi-info-circle-fill'
+    };
+
+    const colores = {
+        success: 'bg-success',
+        error: 'bg-danger',
+        warning: 'bg-warning text-dark',
+        info: 'bg-info text-dark'
+    };
+
+    const html = `
+        <div id="${toastId}" class="toast align-items-center ${colores[tipo]} border-0 alerta-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi ${iconos[tipo]} me-2"></i>${mensaje}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+// ============================================================
+// LÓGICA DE MÓDULOS DINÁMICOS
+// ============================================================
+
+document.getElementById('tipoProyecto').addEventListener('change', function() {
+    const tipo = this.value;
+    const contenedor = document.getElementById('contenedorModulos');
+
+    if (!tipo) {
+        contenedor.innerHTML = `
+            <p class="text-muted text-center mb-0" style="font-size: 0.9rem;">
+                <i class="bi bi-info-circle me-1"></i> Seleccione un tipo de proyecto para ver los módulos disponibles
+            </p>
+        `;
+        return;
+    }
+
+    const modulos = MODULOS_DISPONIBLES[tipo];
+    let html = '';
+
+    modulos.forEach(modulo => {
+        html += `
+            <div class="modulo-checkbox">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="${modulo.nombre}" id="mod_${modulo.nombre.replace(/\s/g, '_')}">
+                    <label class="form-check-label w-100" for="mod_${modulo.nombre.replace(/\s/g, '_')}">
+                        ${modulo.nombre}
+                        <span class="precio-tag">+$${modulo.precio}</span>
+                    </label>
+                </div>
+            </div>
+        `;
+    });
+
+    contenedor.innerHTML = html;
+});
+
+// ============================================================
+// MANEJO DEL FORMULARIO (FETCH API)
+// ============================================================
+
+document.getElementById('formCotizacion').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Recopilar datos del formulario
+    const nombre = document.getElementById('clienteNombre').value.trim();
+    const documento = document.getElementById('clienteDocumento').value.trim();
+    const correo = document.getElementById('clienteCorreo').value.trim();
+    const tipoProyecto = document.getElementById('tipoProyecto').value;
+    const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+
+    // Recopilar módulos seleccionados
+    const checkboxes = document.querySelectorAll('#contenedorModulos input[type="checkbox"]:checked');
+    const modulosSeleccionados = Array.from(checkboxes).map(cb => cb.value);
+
+    // Validaciones
+    if (!tipoProyecto) {
+        mostrarToast('Por favor seleccione un tipo de proyecto', 'warning');
+        return;
+    }
+
+    // Construir payload JSON
+    const payload = {
+        cliente_nombre: nombre,
+        cliente_documento: documento,
+        cliente_correo: correo,
+        tipo_proyecto: tipoProyecto,
+        modulos_seleccionados: modulosSeleccionados,
+        descuento_porcentaje: descuento
+    };
+
+    // Mostrar indicador de carga
+    const btnSubmit = this.querySelector('button[type="submit"]');
+    const btnOriginal = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || 'Error al procesar la cotización');
+        }
+
+        if (data.exito) {
+            mostrarToast('¡Cotización generada y guardada exitosamente!', 'success');
+            pintarVistaPrevia(data);
+            document.getElementById('btnDescargarPDF').disabled = false;
+        } else {
+            throw new Error(data.mensaje || 'Error desconocido');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('Error: ' + error.message, 'error');
+    } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = btnOriginal;
+    }
+});
+
+// ============================================================
+// PINTAR VISTA PREVIA EN LA HOJA A4
+// ============================================================
+
+function pintarVistaPrevia(data) {
+    const detalle = data.detalle_calculo;
+
+    // Ocultar estado vacío, mostrar contenido
+    document.getElementById('estadoVacio').style.display = 'none';
+    document.getElementById('contenidoCotizacion').style.display = 'block';
+
+    // Datos del cliente
+    document.getElementById('previewNombre').textContent = data.datos_cliente.nombre;
+    document.getElementById('previewDocumento').textContent = data.datos_cliente.documento;
+    document.getElementById('previewCorreo').textContent = data.datos_cliente.correo;
+    document.getElementById('previewFecha').textContent = data.fecha_creacion;
+    document.getElementById('previewTipo').textContent = detalle.tipo_proyecto;
+
+    // Tabla de conceptos
+    const tbody = document.getElementById('tablaConceptos');
+    tbody.innerHTML = '';
+
+    detalle.conceptos.forEach(concepto => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${concepto.concepto}</td>
+            <td class="text-center">${concepto.cantidad}</td>
+            <td class="text-end">${formatearMoneda(concepto.precio_unitario)}</td>
+            <td class="text-end fw-bold">${formatearMoneda(concepto.total)}</td>
+        `;
+        tbody.appendChild(fila);
+    });
+
+    // Totales
+    // Ahora pintamos el total sin descuento primero ($350.00)
+    document.getElementById('previewSubtotal').textContent = formatearMoneda(detalle.subtotal_bruto);
+    document.getElementById('previewIGV').textContent = formatearMoneda(detalle.igv);
+    document.getElementById('previewTotal').textContent = formatearMoneda(detalle.total);
+
+    // Descuento
+    const filaDescuento = document.getElementById('filaDescuento');
+    if (detalle.descuento_porcentaje > 0) {
+        filaDescuento.style.display = 'flex';
+        document.getElementById('previewDescPorcentaje').textContent = detalle.descuento_porcentaje;
+        document.getElementById('previewDescuento').textContent = '-' + formatearMoneda(detalle.monto_descuento);
+    } else {
+        filaDescuento.style.display = 'none';
+    }
+}
+
+// ============================================================
+// EXPORTAR A PDF CON html2pdf.js
+// ============================================================
+
+function descargarPDF() {
+    const elemento = document.getElementById('hojaA4');
+    const nombreCliente = document.getElementById('previewNombre').textContent.trim().replace(/\s+/g, '_');
+    const fecha = new Date().toISOString().split('T')[0];
+    const nombreArchivo = `Cotizacion_${nombreCliente}_${fecha}.pdf`;
+
+    const opciones = {
+        margin: [10, 10, 10, 10],
+        filename: nombreArchivo,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        }
+    };
+
+    // Mostrar indicador
+    const btn = document.getElementById('btnDescargarPDF');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando PDF...';
+    btn.disabled = true;
+
+    html2pdf().set(opciones).from(elemento).save().then(() => {
+        mostrarToast('PDF descargado exitosamente', 'success');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }).catch(err => {
+        console.error('Error PDF:', err);
+        mostrarToast('Error al generar el PDF', 'error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+</script>
+
+</body>
+</html>
